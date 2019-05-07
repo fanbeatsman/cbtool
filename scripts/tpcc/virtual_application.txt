@@ -53,10 +53,33 @@ MYSQL_CONF_FILE = /etc/mysql/mysql.conf.d/mysqld.cnf
 MYSQL_RAM_PERCENTAGE = 60
 
 # Default Ubuntu values
+
+# innodb_io_capacity should be set to approximately the number of I/O
+# operations that the system can perform per second. Ideally, keep the setting
+# as low as practical, but not so low that background activities fall behind.
+# If the value is too high, data is removed from the buffer pool and insert
+# buffer too quickly for caching to provide a significant benefit.
 MYSQL_INNODB_IO_CAPACITY = 200
+
+# The combined size of the log files (innodb_log_file_size * innodb_log_files_in_group (= 2))
+# should be large enough that the server can smooth out peaks and troughs in
+# workload activity, which often means that there is enough redo log space to
+# handle more than an hour of write activity. The larger the value, the less
+# checkpoint flush activity is required in the buffer pool, saving disk I/O.
 MYSQL_INNODB_LOG_FILE_SIZE = 48M
+
+# A large query cache size leads to significant performance degradation. This
+# is because of cache overhead and locking. Cacheable queries take out an
+# exclusive lock on MySQL’s query cache. In addition, any insert, update,
+# delete, or other modifications to a table causes any relevant entries in the
+# query cache to be flushed.
 MYSQL_QUERY_CACHE_SIZE = 16M
+
+# The maximum size of internal in-memory temporary tables.
 MYSQL_TMP_TABLE_SIZE = 16M
+
+# The number of open tables for all threads. Increasing this value increases
+# the number of file descriptors that mysqld requires.
 MYSQL_TABLE_OPEN_CACHE = 2000
 
 # Install Percona Monitoring and Management
