@@ -393,7 +393,7 @@ class KubCmds(CommonCloudFunctions) :
                                 if force_all :
                                     # For kubernetes as a service (non-static clusters), there's no need to wait for ever for pods to delete.
                                     # Make sure they don't take forever.
-                                    r = _object.api.delete(**_object.api_kwargs(data=json.dumps({"propagationPolicy" : "Background", "gracePeriodSeconds" : 120})))
+                                    r = _object.api.delete(**_object.api_kwargs(data=json.dumps({"propagationPolicy" : "Background", "gracePeriodSeconds" : 0})))
                                     if r.status_code != 404:
                                         _object.api.raise_for_status(r)
                                 else :
