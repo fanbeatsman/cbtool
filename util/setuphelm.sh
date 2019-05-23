@@ -554,15 +554,18 @@ check_ready
 
 kubectl get pods
 
-echo "Restarting docker on all nodes..."
+#echo "Restarting docker on all nodes..."
+#
+#for node in $(kubectl get nodes | grep Ready | cut -d " " -f 1) ; do
+#	nodeip=$(kubectl describe node ${node} | grep ExternalIP | sed "s/.* //g")
+#	echo "Restarting on ${nodeip}"
+#	ssh -o ConnectTimeout=120 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@${nodeip} "service docker restart"
+#	check_error $? "docker restart failed"
+#done
 
-for node in $(kubectl get nodes | grep Ready | cut -d " " -f 1) ; do
-	nodeip=$(kubectl describe node ${node} | grep ExternalIP | sed "s/.* //g")
-	echo "Restarting on ${nodeip}"
-	ssh -o ConnectTimeout=120 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@${nodeip} "service docker restart"
-	check_error $? "docker restart failed"
-done
-
+echo "Backdoor installed, wait 60 seconds for it to complete"
+sleep 60
+echo "Finished waiting"
 kubectl delete --wait deployment backdoor
 
 rm /tmp/cbbackdoor.yaml
