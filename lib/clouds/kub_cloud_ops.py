@@ -30,6 +30,7 @@ import operator
 import pykube
 import traceback
 import threading
+import json
 
 from lib.auxiliary.code_instrumentation import trace, cbdebug, cberr, cbwarn, cbinfo, cbcrit
 from lib.auxiliary.data_ops import str2dic, is_number, DataOpsException
