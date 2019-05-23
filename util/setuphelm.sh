@@ -563,9 +563,17 @@ kubectl get pods
 #	check_error $? "docker restart failed"
 #done
 
-echo "Backdoor installed, wait 60 seconds for it to complete"
-sleep 60
-echo "Finished waiting"
+echo "Backdoor installed, waiting for completion..."
+
+while true ; do
+	completed=$(kubectl get pods | grep backdoor | sed "s/ \+/ /g" | cut -d " " -f 4 | grep -v 0 | wc -l)
+	echo "Completed: $completed ..."
+	if [ $completed == ${NODES} ] ; then
+		echo "Backdoor complete."
+		break
+	fi
+done
+
 kubectl delete --wait deployment backdoor
 
 rm /tmp/cbbackdoor.yaml
