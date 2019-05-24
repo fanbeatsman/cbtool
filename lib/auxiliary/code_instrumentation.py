@@ -82,8 +82,8 @@ def trace_actual(aFunc):
         
     return loggedFunc
 
-trace = trace_actual
-#trace = trace_nothing
+#trace = trace_actual
+trace = trace_nothing
 
 def _cblog(*args):
     '''
