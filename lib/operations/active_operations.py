@@ -2576,6 +2576,8 @@ class ActiveObjectOperations(BaseObjectOperations) :
             _fmsg = str(obj.msg)
 
         except Exception, e :
+            for line in traceback.format_exc().splitlines() :
+                cberr(line, True)
             _status = 23
             _fmsg = str(e)
 
