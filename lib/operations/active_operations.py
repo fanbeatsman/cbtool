@@ -1072,7 +1072,7 @@ class ActiveObjectOperations(BaseObjectOperations) :
                 _msg += "experiment: " + _fmsg
                 cberr(_msg)
             else :
-                _msg = "\nAll VMCs successfully attached to this experiment." + self.walkthrough_messages("CLOUD", "attach", _obj_attr_list)
+                _msg = "\nAll VMCs successfully attached to this experiment." + self.walkthrough_messages("CLOUD", "attach", obj_attr_list)
                 cbdebug(_msg)
                         
             return self.package(_status, _msg, self.get_cloud_parameters(obj_attr_list["cloud_name"]))
