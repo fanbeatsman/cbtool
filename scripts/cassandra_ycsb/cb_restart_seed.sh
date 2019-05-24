@@ -115,6 +115,10 @@ sudo sed -i "s/write_request_timeout_in_ms:.*$/write_request_timeout_in_ms: 2000
 sudo sed -i "s/auto_snapshot:.*$/auto_snapshot: false/g" ${CASSANDRA_CONF_PATH}
 sudo sed -i "s/partitioner: org.apache.cassandra.dht.Murmur3Partitioner/partitioner: org.apache.cassandra.dht.RandomPartitioner/g" ${CASSANDRA_CONF_PATH}
 #sudo sed -i "s/partitioner:.*$/partitioner: org.apache.cassandra.dht.RandomPartitioner/g" ${CASSANDRA_CONF_PATH}    
+
+sudo sed -ie "s/#MAX_HEAP_SIZE=.*/MAX_HEAP_SIZE=\"2G\"/g" /etc/cassandra/cassandra-env.sh
+sudo sed -ie "s/#HEAP_NEWSIZE=.*/HEAP_NEWSIZE=\"200M\"/g" /etc/cassandra/cassandra-env.sh
+
 if [[ -d ${SEED_DATA_DIR} ]]
 then
     sudo sed -i "s^/var/lib/^${SEED_DATA_DIR}/^g" ${CASSANDRA_CONF_PATH}
