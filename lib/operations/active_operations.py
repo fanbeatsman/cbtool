@@ -1254,7 +1254,36 @@ class ActiveObjectOperations(BaseObjectOperations) :
                     if str(_vmc_defaults["placement_method"]).lower().strip().count("roundrobin") : # use round-robin
                         # Intra-Pool Round-robin support.
                         _visited = []
-                        _vmc_lock = self.osci.acquire_lock(_cn, "VMC", "vmc_placement", obj_attr_list["vmc_pool"], 1)
+
+                        if obj_attr_list["ai_name"].lower() != "none" :
+                            # Force serializing of the placement decision (but not the attachment)
+                            # so that we can deterministically round-robin VMs to the same places
+                            # during baseline tests.
+                            while True :
+                                _vmc_lock = self.osci.acquire_lock(_cn, "VMC", "vmc_placement", obj_attr_list["vmc_pool"], 1)
+                                assert(_vmc_lock)
+                                cbdebug("Waiting: " + str(obj_attr_list["placement_order"]) + " for AI " + str(obj_attr_list["ai"]))
+                                placement_leader = self.osci.pending_object_get(_cn, "AI", obj_attr_list["ai"], "placement_leader", failcheck = False)
+
+                                if isinstance(placement_leader, bool) and not placement_leader :
+                                    cbdebug("Initializing placement leader: 0")
+                                    self.osci.pending_object_set(_cn, "AI", obj_attr_list["ai"], "placement_leader", 0)
+                                    placement_leader = 0
+                                else :
+                                   cbdebug("Got leader: " + str(placement_leader))
+
+                                if int(placement_leader) == int(obj_attr_list["placement_order"]) :
+                                    cbdebug("It's my turn! " + obj_attr_list["name"])
+                                    self.osci.pending_object_set(_cn, "AI", obj_attr_list["ai"], "placement_leader", int(placement_leader) + 1)
+                                    break
+                                else :
+                                    cbdebug("Placement leader: " + str(placement_leader))
+
+                                self.osci.release_lock(_cn, "VMC", "vmc_placement", _vmc_lock)
+                                sleep(1)
+                        else :
+                            _vmc_lock = self.osci.acquire_lock(_cn, "VMC", "vmc_placement", obj_attr_list["vmc_pool"], 1)
+
                         assert(_vmc_lock)
 
                         for _vmc_uuid_entry in _vmc_uuid_list :
