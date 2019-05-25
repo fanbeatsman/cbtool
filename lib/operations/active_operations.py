@@ -1247,10 +1247,10 @@ class ActiveObjectOperations(BaseObjectOperations) :
                 _vmc_uuid_list = self.osci.query_by_view(_cn, "VMC", "BYPOOL", \
                                                          obj_attr_list["vmc_pool"])
 
+                cbdebug("VMC uuid list: " + str(_vmc_uuid_list))
     
                 if len(_vmc_uuid_list) :
-                    _vmc_defaults = self.osci.get_object(_cn, "GLOBAL", False, \
-                                                         "vmc_defaults", False)
+                    _vmc_defaults = self.osci.get_object(_cn, "GLOBAL", False, "vmc_defaults", False)
                     if str(_vmc_defaults["placement_method"]).lower().strip().count("roundrobin") : # use round-robin
                         # Intra-Pool Round-robin support.
                         _visited = []
@@ -1310,7 +1310,11 @@ class ActiveObjectOperations(BaseObjectOperations) :
                         cbdebug("After Visited: " + str(len(_visited)) + " total: " + str(len(_vmc_uuid_list)))
 
                     assert(len(_vmc_uuid_list))
-                    obj_attr_list["vmc"] = choice(_vmc_uuid_list).split('|')[0]
+                    if str(_vmc_defaults["placement_method"]).lower().strip().count("roundrobin") :
+                        obj_attr_list["vmc"] = _vmc_uuid_list[0].split('|')[0]
+                        cbdebug("Round-robin selected: " + str(_vmc_uuid_list[0]))
+                    else :
+                        obj_attr_list["vmc"] = choice(_vmc_uuid_list).split('|')[0]
 
                     if str(_vmc_defaults["placement_method"]).lower().strip().count("colocate") :
                         _colocate_lock = self.osci.acquire_lock(_cn, "VMC", "vmc_colocate", obj_attr_list["vmc_pool"], 1)
