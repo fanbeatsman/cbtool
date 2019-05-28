@@ -36,7 +36,7 @@ from lib.auxiliary.data_ops import str2dic, dic2str, get_boostrap_command, selec
 from lib.auxiliary.value_generation import ValueGeneration
 from lib.stores.stores_initial_setup import StoreSetupException
 from lib.auxiliary.thread_pool import ThreadPool
-from lib.auxiliary.data_ops import selective_dict_update
+from lib.auxiliary.data_ops import selective_dict_update, natural_keys
 from lib.auxiliary.config import parse_cld_defs_file, load_store_functions, get_available_clouds, rewrite_cloudconfig, rewrite_cloudoptions
 from lib.clouds.shared_functions import CldOpsException
 from lib.remote.network_functions import Nethashget
@@ -1246,10 +1246,26 @@ class ActiveObjectOperations(BaseObjectOperations) :
             if not "vmc" in obj_attr_list and "vmc_pool" in obj_attr_list :
                 _vmc_uuid_list = self.osci.query_by_view(_cn, "VMC", "BYPOOL", \
                                                          obj_attr_list["vmc_pool"])
-
-                cbdebug("VMC uuid list: " + str(_vmc_uuid_list))
-    
+                
                 if len(_vmc_uuid_list) :
+
+                    # We want round-robin support to be as deterministic as possible
+                    # We want to iterate through the VMC lists by name so that they
+                    # are always visited in the same order, so do a basic lexicographical sort.
+                    if len(_vmc_uuid_list) > 1 :
+                        _vmc_uuid_names = {} 
+                        for _vitem in _vmc_uuid_list :
+                            _vmc_uuid_names[_vitem.split("|")[1]] = _vitem
+
+                        _vitem_names = _vmc_uuid_names.keys()
+                        _vitem_names.sort(key=natural_keys)
+                        _vmc_uuid_list = []
+
+                        for _vitem in _vitem_names :
+                            _vmc_uuid_list.append(_vmc_uuid_names[_vitem])
+
+                        cbdebug("Naturally sorted VMC uuid list by name: " + str(_vmc_uuid_list))
+    
                     _vmc_defaults = self.osci.get_object(_cn, "GLOBAL", False, "vmc_defaults", False)
                     if str(_vmc_defaults["placement_method"]).lower().strip().count("roundrobin") : # use round-robin
                         # Intra-Pool Round-robin support.
