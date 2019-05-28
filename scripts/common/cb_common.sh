@@ -39,6 +39,7 @@ RANGE=60
 ATTEMPTS=3
 
 SETUP_TIME=20
+SUDO_CMD=`which sudo`
 
 NEST_EXPORTED_HOME="/tmp/userhome"
 
@@ -1468,7 +1469,6 @@ function post_boot_steps {
 
     SHORT_HOSTNAME=$(uname -n| cut -d "." -f 1)
     KILL_CMD=`which killall`
-    SUDO_CMD=`which sudo`
     export PATH=$PATH:/sbin
     PIDOF_CMD=`which pidof`
 
