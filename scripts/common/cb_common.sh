@@ -1396,7 +1396,7 @@ function replicate_to_container_if_nested {
     syslog_netcat "Container started, settling..."
 
     # Figure out when the container is ready
-    ATTEMPTS=100
+    ATTEMPTS=200
     while true ; do
         out=$(sudo docker exec -u ${username} --privileged cbnested bash -c "if [ x\"\$(ps -ef | grep sshd | grep -v grep)\" != x ] ; then exit 0 ; else exit 2 ; fi" 2>&1)
         rc=$?
