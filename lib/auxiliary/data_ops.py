@@ -610,4 +610,4 @@ def natural_keys(text):
   def atoi(text):
     return int(text) if text.isdigit() else text
 
-  return [ atoi(c) for c in re.split(r'(\d+)', text) ]
+  return [ atoi(c) for c in split(r'(\d+)', text) ]
